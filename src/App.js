@@ -23,17 +23,21 @@ function App() {
       .then(res => res.json())
       .then(async (data) => {
         const _image = data.sprites.other["official-artwork"].front_default;
-        const _type = data.types[0].type.name;
+        const _type1 = data.types[0].type.name;
+        const _type2 = data.types.length > 1 ? data.types[1].type.name : null;
         const _iconImage = data.sprites.other.dream_world.front_default;
-        const japaneseInfo = await translateToJapanese(data.name, _type);
+        const japaneseInfo1 = await translateToJapanese(data.name, _type1);
+        const japaneseInfo2 = _type2 ? await translateToJapanese(data.name, _type2) : {name: null, type: null};
         const newList = {
           id: data.id,
           name: data.name,
           image: _image,
-          type: _type,
+          type1: _type1,
+          type2: _type2,
           iconImage: _iconImage,
-          jpName: japaneseInfo.name,
-          jpType: japaneseInfo.type
+          jpName: japaneseInfo1.name,
+          jpType1: japaneseInfo1.type,
+          jpType2: japaneseInfo2.type,
         };
         console.log(newList);
         setAllPokemons(currentList => [...currentList, newList].sort((a, b) => a.id - b.id));
@@ -75,9 +79,11 @@ function App() {
               id={pokemon.id}
               name={pokemon.name}
               jpName={pokemon.jpName}
-              jpType={pokemon.jpType}
+              jpType1={pokemon.jpType1}
+              jpType2={pokemon.jpType2}
               image={pokemon.image}
-              type={pokemon.type}
+              type1={pokemon.type1}
+              type2={pokemon.type2}
               iconImage={pokemon.iconImage}
               key={index} />
           ))}
@@ -93,4 +99,3 @@ function App() {
 }
 
 export default App;
-
