@@ -1,8 +1,19 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import PokemonThumbnails from './PokemonThumbnails';
+import pokemonJson from './pokemon.json';
+import pokemonTypeJson from './pokemonType.json';
 
 function App() {
+  const translateToJapanese = async (name, type) => {
+    const jpName = await pokemonJson.find(
+      (pokemon) => pokemon.en.toLowerCase() === name
+    ).ja;
+    const jpType = await pokemonTypeJson[type];
+    console.log(jpType);
+    return { name: jpName, type: jpType };
+  }
+
   const [allPokemons, setAllPokemons] = useState([]);
 
   const createPokemonObject = (results) => {
@@ -10,25 +21,28 @@ function App() {
       const pokemonUrl = `https://pokeapi.co/api/v2/pokemon/${pokemon.name}`;
       fetch(pokemonUrl)
       .then(res => res.json())
-      .then(data => {
+      .then(async (data) => {
         const _image = data.sprites.other["official-artwork"].front_default;
         const _type = data.types[0].type.name;
         const _iconImage = data.sprites.other.dream_world.front_default;
+        const japaneseInfo = await translateToJapanese(data.name, _type);
         const newList = {
           id: data.id,
           name: data.name,
           image: _image,
           type: _type,
           iconImage: _iconImage,
+          jpName: japaneseInfo.name,
+          jpType: japaneseInfo.type
         };
         console.log(newList);
-        setAllPokemons(currentList => [...currentList, newList]);
+        setAllPokemons(currentList => [...currentList, newList].sort((a, b) => a.id - b.id));
       })
     });
     
   };
   console.log(allPokemons);
-  const [url, setUrl] = useState("https://pokeapi.co/api/v2/pokemon?limit=20");
+  const [url, setUrl] = useState("https://pokeapi.co/api/v2/pokemon?limit=100");
   const [isLoading, setIsLoading] = useState(false);
 
   const getAllPokemons = () => {
@@ -60,6 +74,8 @@ function App() {
             <PokemonThumbnails
               id={pokemon.id}
               name={pokemon.name}
+              jpName={pokemon.jpName}
+              jpType={pokemon.jpType}
               image={pokemon.image}
               type={pokemon.type}
               iconImage={pokemon.iconImage}
@@ -77,3 +93,4 @@ function App() {
 }
 
 export default App;
+

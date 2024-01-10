@@ -1,6 +1,6 @@
 import React from 'react';
 
-const PokemonThumbnails = ({ id, name, image, type, iconImage }) => {
+const PokemonThumbnails = ({ id, name, jpName, image, type, jpType, iconImage }) => {
     return (
         <div className="thumb-container grass">
             <div className="number">
@@ -9,8 +9,8 @@ const PokemonThumbnails = ({ id, name, image, type, iconImage }) => {
             <img src={image} alt={name} />
             <img src={iconImage} alt={name} className='icon-image' />
             <div className="detail-wrapper">
-                <h4>{name}</h4>
-                <h3>{type}</h3>
+                <h4>{jpName}</h4>
+                <h3>{jpType}</h3>
             </div>
         </div>
     );
