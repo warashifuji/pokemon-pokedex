@@ -158,7 +158,7 @@ h3 {
 }
 
 .thumb-container small {
-  /* text-transform: capitalize; */
+  text-transform: capitalize;
 }
 
 .detail-wrapper {
