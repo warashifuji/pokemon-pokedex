@@ -1,7 +1,21 @@
-import React from "react";
+import React from 'react';
 
-const PokemonThumnails = () => {
-    return <div>PokemonThumanails</div>;
-}
+const PokemonThumbnails = ({ id, name, jpName, image, type1, type2, jpType1, jpType2, iconImage }) => {
+    return (
+        <div className="thumb-container grass">
+            <div className="number">
+                <small>#0{id}</small>
+            </div>
+            <img src={image} alt={name} />
+            <img src={iconImage} alt={name} className='icon-image' />
+            <div className="detail-wrapper">
+                <h4>{name}</h4>
+                <h4>{jpName}</h4>
+                <h3>{jpType2 ? `${jpType1}・${jpType2}` : jpType1}</h3>
 
-export default PokemonThumnails;
+            </div>
+        </div>
+    );
+};
+
+export default PokemonThumbnails;
