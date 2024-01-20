@@ -5,17 +5,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 )
-
-type PokemonListResponse struct {
-	Count    int    `json:"count"`
-	Next     string `json:"next"`
-	Previous string `json:"previous"`
-	Results  []struct {
-		Name string `json:"name"`
-		Url  string `json:"url"`
-	} `json:"results"`
-}
 
 const baseURL = "http://pokeapi.co/api/v2/"
 
@@ -39,6 +30,7 @@ func getPokemonList(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	// go -> json
 	jsonData, err := json.Marshal(pokemonList)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -48,7 +40,25 @@ func getPokemonList(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonData)
 }
 
+func getPokemonDetail(w http.ResponseWriter, r *http.Request) {
+	// URLからポケモンの名前を取得
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 3 {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+	pokemonName := parts[2]
+	resp, err := http.Get(baseURL + "pokemon/" + pokemonName)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+}
+
 func main() {
 	http.HandleFunc("/pokemon", getPokemonList)
+	http.HandleFunc("/pokemon/", getPokemonDetail)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

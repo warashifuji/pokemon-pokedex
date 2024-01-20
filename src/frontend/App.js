@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import PokemonThumbnails from './PokemonThumbnails';
-import pokemonJson from './pokemon.json';
-import pokemonTypeJson from './pokemonType.json';
+import pokemonJson from '../pokemon.json';
+import pokemonTypeJson from '../pokemonType.json';
 
 function App() {
   const translateToJapanese = async (name, type) => {
