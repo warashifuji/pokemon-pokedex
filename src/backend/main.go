@@ -15,23 +15,37 @@ func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
 }
 
-func getPokemonList(w http.ResponseWriter, r *http.Request) {
-	enableCors(&w)
-	resp, err := http.Get(baseURL + "pokemon")
+func fetchPokemonData(url string, ch chan<- []byte) {
+	resp, err := http.Get(url)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error fetching data: %v", err)
+		ch <- nil
 		return
 	}
 	defer resp.Body.Close()
 	//bodyは[]byte(バイトスライス)として返される
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("Error reading response body: %v", err)
 		return
 	}
+	ch <- body
+}
+
+func getPokemonList(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+
+	ch := make(chan []byte)
+	go fetchPokemonData(baseURL+"pokemon", ch)
+	body := <-ch
+	if body == nil {
+		http.Error(w, "Failed to fetch pokemon list", http.StatusInternalServerError)
+		return
+	}
+
 	var pokemonList PokemonListResponse
 	//json->go構造体　Unmarshalの第一引数には[]byte型
-	err = json.Unmarshal(body, &pokemonList)
+	err := json.Unmarshal(body, &pokemonList)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -55,21 +69,17 @@ func getPokemonDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	pokemonName := parts[2]
-	resp, err := http.Get(baseURL + "pokemon/" + pokemonName)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	ch := make(chan []byte)
+	go fetchPokemonData(baseURL+"pokemon/"+pokemonName, ch)
+	body := <-ch
+	if body == nil {
+		http.Error(w, "Failed to fetch pokemon Detail", http.StatusInternalServerError)
 		return
 	}
 
 	var pokemonDetail PokemonDetailResponse
-	err = json.Unmarshal(body, &pokemonDetail)
+	err := json.Unmarshal(body, &pokemonDetail)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
