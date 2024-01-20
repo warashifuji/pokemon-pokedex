@@ -112,7 +112,7 @@ code {
   margin: 0.3rem;
   border: 1px solid #efefef;
   border-radius: 0.2rem;
-  min-width: 160px;
+  min-width: 200px;
   text-align: center;
   box-shadow: 0 3px 15px rgba(0, 0, 0, 0.089);
   transition: 0.3s;
@@ -136,8 +136,8 @@ h3 {
 }
 
 .thumb-container img {
-  width: 120px;
-  height: 120px;
+  width: 150px;
+  height: 150px;
 }
 
 .thumb-container .icon-image {

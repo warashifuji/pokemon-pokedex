@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -55,10 +56,32 @@ func getPokemonDetail(w http.ResponseWriter, r *http.Request) {
 	}
 	defer resp.Body.Close()
 
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var pokemonDetail PokemonDetailResponse
+	err = json.Unmarshal(body, &pokemonDetail)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// go -> json
+	jsonData, err := json.Marshal(pokemonDetail)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonData)
+
 }
 
 func main() {
 	http.HandleFunc("/pokemon", getPokemonList)
 	http.HandleFunc("/pokemon/", getPokemonDetail)
+	fmt.Println("Start server at port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
