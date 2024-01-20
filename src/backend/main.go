@@ -11,7 +11,12 @@ import (
 
 const baseURL = "http://pokeapi.co/api/v2/"
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+}
+
 func getPokemonList(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	resp, err := http.Get(baseURL + "pokemon")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -42,6 +47,7 @@ func getPokemonList(w http.ResponseWriter, r *http.Request) {
 }
 
 func getPokemonDetail(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	// URLからポケモンの名前を取得
 	parts := strings.Split(r.URL.Path, "/")
 	if len(parts) < 3 {

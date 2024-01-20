@@ -18,7 +18,8 @@ function App() {
 
   const createPokemonObject = (results) => {
     results.forEach(pokemon => {
-      const pokemonUrl = `https://pokeapi.co/api/v2/pokemon/${pokemon.name}`;
+      const pokemonUrl = `http://localhost:8080/pokemon/${pokemon.name}`
+      // const pokemonUrl = `https://pokeapi.co/api/v2/pokemon/${pokemon.name}`;
       fetch(pokemonUrl)
       .then(res => res.json())
       .then(async (data) => {
@@ -46,13 +47,13 @@ function App() {
     
   };
   console.log(allPokemons);
-  const [url, setUrl] = useState("https://pokeapi.co/api/v2/pokemon?limit=100");
+  const [url, setUrl] = useState("http://localhost:8080/pokemon");
   const [isLoading, setIsLoading] = useState(false);
 
   const getAllPokemons = () => {
     setIsLoading(true);
     fetch(url)
-      .then(res => res.json())
+      .then(resp => resp.json())
       .then(data => {
         console.log(data.results);
         createPokemonObject(data.results);
